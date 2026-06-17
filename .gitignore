@@ -1,0 +1,17 @@
+# Build
+target/
+
+# Refactor Radar
+.refactor-radar/*
+!.refactor-radar/
+!.refactor-radar/config.toml
+
+# IDE
+.idea/
+.zed/
+
+# Codex
+.agents/
+.codex/*
+!.codex/
+!.codex/config.toml

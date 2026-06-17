@@ -1,0 +1,24 @@
+{
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.svn",
+    "**/.hg",
+    "**/.jj",
+    "**/CVS",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.classpath",
+    "**/.settings",
+
+    "**/target",
+    "**/node_modules",
+    "**/dist",
+    "**/build",
+    "**/.cache",
+    "**/.next",
+    "**/coverage",
+    "**/tmp",
+    "**/logs",
+  ],
+  "scan_symlinks": "expanded",
+}
