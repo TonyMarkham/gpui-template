@@ -1,0 +1,6 @@
+[submodule "submodules/zed"]
+	path = submodules/zed
+	url = https://github.com/zed-industries/zed.git
+[submodule "submodules/gpui-component"]
+	path = submodules/gpui-component
+	url = https://github.com/longbridge/gpui-component.git
