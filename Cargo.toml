@@ -1,13 +1,8 @@
 [workspace]
 members = [
-    "crates/app"
-]
-default-members = [
-    "crates/app"
-]
-exclude = [
-    "submodules/zed",
-    "submodules/gpui-component",
+    "crates/app",
+    "crates/components/tree-view",
+    "crates/tree-view-app"
 ]
 resolver = "3"
 
@@ -16,24 +11,17 @@ version = "0.1.0"
 edition = "2024"
 
 [workspace.dependencies]
-# Zed
-gpui                  = { path = "submodules/zed/crates/gpui", default-features = false, features = ["font-kit", "wayland", "x11"] }
-gpui_platform         = { path = "submodules/zed/crates/gpui_platform", default-features = false, features = ["font-kit", "runtime_shaders", "wayland", "x11"] }
-
-# GPUI Component
-gpui-component        = { path = "submodules/gpui-component/crates/ui" }
-gpui-component-assets = { path = "submodules/gpui-component/crates/assets" }
-
-[patch."https://github.com/zed-industries/zed"]
-gpui                  = { path = "submodules/zed/crates/gpui" }
-gpui_macros           = { path = "submodules/zed/crates/gpui_macros" }
-gpui_platform         = { path = "submodules/zed/crates/gpui_platform" }
-gpui_web              = { path = "submodules/zed/crates/gpui_web" }
+error-location        = { version = "0.1.0" }
+gpui                  = { version = "0.2.2" }
+gpui-component        = { version = "0.5.1" }
+gpui-component-assets = { version = "0.5.1" }
+thiserror             = { version = "2.0.18" }
+tree-view             = { path = "crates/components/tree-view" }
 
 [workspace.lints.clippy]
-unwrap_used                 = "deny"
-expect_used                 = "deny"
-panic                       = "deny"
+unwrap_used           = "deny"
+expect_used           = "deny"
+panic                 = "deny"
 
 [workspace.lints.rust]
-unused_must_use             = "deny"
+unused_must_use       = "deny"

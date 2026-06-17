@@ -1,18 +1,17 @@
 [package]
-name = "app"
+name = "tree-view-app"
 version.workspace = true
 edition.workspace = true
 
 [[bin]]
-name = "template-app"
+name = "tree-view-app"
 path = "src/main.rs"
 
 [dependencies]
-error-location        = { workspace = true }
 gpui                  = { workspace = true }
 gpui-component        = { workspace = true }
 gpui-component-assets = { workspace = true }
-thiserror             = { workspace = true }
+tree-view             = { workspace = true }
 
 [lints]
 workspace             = true
