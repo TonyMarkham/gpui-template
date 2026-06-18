@@ -1,54 +1,44 @@
-pub(crate) mod error;
-pub(crate) mod theme;
-pub(crate) mod windows;
+mod error;
+mod theme;
+mod windows;
 
 // ---------------------------------------------------------------------------------------------- //
 
 use crate::{
-    error::app_error::AppError, theme::init as init_theme, windows::main_window::MainWindow,
+    error::AppError, theme::init as AppThemeInit, windows::open_main_window as app_open_main_window,
 };
 
-#[cfg(target_os = "linux")]
-use gpui::WindowDecorations;
-use gpui::{AppContext, WindowBounds, WindowOptions, px, size};
-use gpui_component::{Root, TitleBar};
+use gpui::{App, Application as GpuiApplication, Pixels, WindowBounds, px, size};
+use gpui_component_assets::Assets as GpuiComponentAssets;
 
-pub(crate) const WINDOW_TITLE: &str = "Template Desktop App";
-pub(crate) const THEME_DIRECTORY_PATH: &str = "./themes";
-pub(crate) const DEFAULT_THEME_NAME: &str = "Tokyo Night";
+const WINDOW_TITLE: &str = "Template Desktop App";
+const THEME_DIRECTORY_PATH: &str = "./themes";
+const DEFAULT_THEME_NAME: &str = "Tokyo Night";
+const RESIZE_EDGE_SIZE: Pixels = px(6.0);
+const RESIZE_CORNER_SIZE: Pixels = px(14.0);
+const DEFAULT_START_WIDTH: f32 = 800.0;
+const DEFAULT_START_HEIGHT: f32 = 600.0;
+const MINIMUM_WIDTH: f32 = 300.0;
+const MINIMUM_HEIGHT: f32 = 200.0;
 
 fn main() {
-    let app = gpui::Application::new().with_assets(gpui_component_assets::Assets);
+    GpuiApplication::new()
+        .with_assets(GpuiComponentAssets)
+        .run(run_app);
+}
 
-    app.run(move |app| {
-        gpui_component::init(app);
-        if let Err(error) = init_theme(app) {
-            report_error(&error);
-        }
+fn run_app(app: &mut App) {
+    gpui_component::init(app);
+    if let Err(error) = AppThemeInit(app) {
+        report_error(&error);
+    }
 
-        let window_bounds = WindowBounds::centered(size(px(800.), px(500.)), app);
+    let window_bounds =
+        WindowBounds::centered(size(px(DEFAULT_START_WIDTH), px(DEFAULT_START_HEIGHT)), app);
 
-        app.spawn(async move |async_app| {
-            let window_options = WindowOptions {
-                window_bounds: Some(window_bounds),
-                titlebar: Some(TitleBar::title_bar_options()),
-                #[cfg(target_os = "linux")]
-                window_decorations: Some(WindowDecorations::Client),
-                ..Default::default()
-            };
-
-            if let Err(error) = async_app.open_window(window_options, |window, window_app| {
-                window.set_window_title(WINDOW_TITLE);
-                let main_window = window_app.new(|_| MainWindow);
-                window_app.new(|root_context| Root::new(main_window, window, root_context))
-            }) {
-                report_error(&AppError::unexpected(format!(
-                    "Failed to open desktop app window: {error}"
-                )));
-            }
-        })
-        .detach();
-    });
+    if let Err(error) = app_open_main_window(app, window_bounds) {
+        report_error(&error);
+    }
 }
 
 fn report_error(error: &AppError) {

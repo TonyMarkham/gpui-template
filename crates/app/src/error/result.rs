@@ -1,4 +1,4 @@
-use crate::error::app_error::AppError;
+use crate::error::AppError;
 
 use std::result::Result as StdResult;
 

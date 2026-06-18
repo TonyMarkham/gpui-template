@@ -1,3 +1,4 @@
+use anyhow::Error as AnyhowError;
 use error_location::ErrorLocation;
 use std::{panic::Location, path::PathBuf};
 use thiserror::Error;
@@ -5,7 +6,7 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 pub enum AppError {
     #[error("{message} {location}")]
-    Unexpected {
+    MainWindow {
         message: String,
         location: ErrorLocation,
     },
@@ -20,32 +21,32 @@ pub enum AppError {
 
 impl AppError {
     #[track_caller]
-    pub(crate) fn unexpected(message: impl Into<String>) -> Self {
-        Self::Unexpected {
-            message: message.into(),
+    pub(crate) fn main_window(e: AnyhowError) -> Self {
+        Self::MainWindow {
+            message: format!("Failed to open main window {e}"),
             location: ErrorLocation::from(Location::caller()),
         }
     }
 
     #[track_caller]
-    pub(crate) fn theme_directory(path: PathBuf, message: impl Into<String>) -> Self {
+    pub(crate) fn theme_directory(path: PathBuf, e: AnyhowError) -> Self {
         Self::ThemeDirectory {
             path: path.clone(),
-            message: message.into(),
+            message: format!("Failed to access theme directory: {e}"),
             location: ErrorLocation::from(Location::caller()),
         }
     }
 
     pub fn message(&self) -> &str {
         match self {
-            Self::Unexpected { .. } => "Unexpected Error",
+            Self::MainWindow { .. } => "Main Window Error",
             Self::ThemeDirectory { .. } => "Theme Directory Error",
         }
     }
 
     pub fn location(&self) -> ErrorLocation {
         match self {
-            Self::Unexpected { location, .. } | Self::ThemeDirectory { location, .. } => *location,
+            Self::MainWindow { location, .. } | Self::ThemeDirectory { location, .. } => *location,
         }
     }
 }

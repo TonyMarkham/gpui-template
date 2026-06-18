@@ -9,14 +9,11 @@ use std::path::PathBuf;
 
 pub(crate) fn init(app: &mut App) -> AppResult<()> {
     let theme_directory = PathBuf::from(THEME_DIRECTORY_PATH);
-    ThemeRegistry::watch_dir(theme_directory.clone(), app, on_load).map_err(|e| {
-        AppError::theme_directory(
-            theme_directory,
-            format!("Failed to access theme directory: {e}"),
-        )
-    })?;
 
-    Ok(())
+    match ThemeRegistry::watch_dir(theme_directory.clone(), app, on_load) {
+        Ok(()) => Ok(()),
+        Err(e) => Err(AppError::theme_directory(theme_directory, e)),
+    }
 }
 
 fn on_load(app: &mut App) {
