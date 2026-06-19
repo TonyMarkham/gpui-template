@@ -2,11 +2,11 @@ mod error;
 mod hotkey;
 mod windows;
 
+// ---------------------------------------------------------------------------------------------- //
+
 use crate::{
     error::{AppError, AppResult},
-    hotkey::{
-        HotkeyController, new_event_channel, select_backend_kind, start_event_task, start_runtime,
-    },
+    hotkey::{Controller, new_event_channel, select_backend_kind, start_event_task, start_runtime},
     windows::open_main_window,
 };
 
@@ -38,7 +38,7 @@ fn run_app(app: &mut App) {
 fn start(app: &mut App) -> AppResult<()> {
     let backend_kind = select_backend_kind();
     let (sender, receiver) = new_event_channel();
-    let controller = app.new(|cx| HotkeyController::new(backend_kind, cx));
+    let controller = app.new(|cx| Controller::new(backend_kind, cx));
     let runtime = start_runtime(backend_kind, sender).map_err(AppError::hotkey_runtime)?;
     let event_task = start_event_task(controller.clone(), receiver, app);
     let window_closed_subscription = app.on_window_closed({

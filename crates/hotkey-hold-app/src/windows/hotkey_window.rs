@@ -1,4 +1,4 @@
-use crate::hotkey::{HotkeyBackendKind, HotkeyController};
+use crate::hotkey::{BackendKind, Controller};
 
 use anyhow::Result;
 use gpui::{
@@ -16,12 +16,12 @@ const HOTKEY_WINDOW_WIDTH: f32 = 360.0;
 const HOTKEY_WINDOW_HEIGHT: f32 = 136.0;
 
 pub(crate) struct HotkeyWindow {
-    backend_kind: HotkeyBackendKind,
+    backend_kind: BackendKind,
     is_visible: bool,
 }
 
 impl HotkeyWindow {
-    pub(crate) fn new(backend_kind: HotkeyBackendKind, _: &mut Context<Self>) -> Self {
+    pub(crate) fn new(backend_kind: BackendKind, _: &mut Context<Self>) -> Self {
         Self {
             backend_kind,
             is_visible: true,
@@ -59,10 +59,12 @@ impl Render for HotkeyWindow {
             .border_color(rgb(0x38bdf8))
             .text_color(rgb(0xf8fafc))
             .child(div().text_2xl().font_semibold().child("Hotkey active"))
-            .child(div().text_sm().text_color(rgb(0xcbd5e1)).child(format!(
-                "Release {} to close",
-                HotkeyController::hotkey_label()
-            )))
+            .child(
+                div()
+                    .text_sm()
+                    .text_color(rgb(0xcbd5e1))
+                    .child(format!("Release {} to close", Controller::hotkey_label())),
+            )
             .child(
                 div()
                     .text_xs()
@@ -74,9 +76,9 @@ impl Render for HotkeyWindow {
 
 pub(crate) fn open_hotkey_window(
     app: &mut App,
-    backend_kind: HotkeyBackendKind,
+    backend_kind: BackendKind,
 ) -> Result<WindowHandle<HotkeyWindow>> {
-    if backend_kind == HotkeyBackendKind::WaylandPortal {
+    if backend_kind == BackendKind::WaylandPortal {
         app.activate(false);
     }
 

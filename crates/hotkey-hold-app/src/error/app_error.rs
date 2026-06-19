@@ -48,5 +48,3 @@ impl AppError {
         }
     }
 }
-
-pub(crate) type AppResult<T> = std::result::Result<T, AppError>;

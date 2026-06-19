@@ -1,6 +1,5 @@
 use crate::{
-    MINIMUM_HEIGHT, MINIMUM_WIDTH, WINDOW_TITLE, hotkey::HotkeyController,
-    windows::window_resize_handles,
+    MINIMUM_HEIGHT, MINIMUM_WIDTH, WINDOW_TITLE, hotkey::Controller, windows::window_resize_handles,
 };
 
 use anyhow::Result;
@@ -14,11 +13,11 @@ use gpui_component::{ActiveTheme, Root, StyledExt, TitleBar, v_flex};
 use gpui::WindowDecorations;
 
 pub(crate) struct MainWindow {
-    controller: Entity<HotkeyController>,
+    controller: Entity<Controller>,
 }
 
 impl MainWindow {
-    pub(crate) fn new(controller: Entity<HotkeyController>, _: &mut Context<Self>) -> Self {
+    pub(crate) fn new(controller: Entity<Controller>, _: &mut Context<Self>) -> Self {
         Self { controller }
     }
 }
@@ -85,7 +84,7 @@ impl Render for MainWindow {
 
 pub(crate) fn open_main_window(
     app: &mut App,
-    controller: Entity<HotkeyController>,
+    controller: Entity<Controller>,
     window_bounds: WindowBounds,
 ) -> Result<()> {
     let options = WindowOptions {
