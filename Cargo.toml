@@ -2,6 +2,7 @@
 members = [
     "crates/app",
     "crates/components/tree-view",
+    "crates/hotkey-hold-app",
     "crates/tree-view-app"
 ]
 resolver = "3"
@@ -12,10 +13,15 @@ edition = "2024"
 
 [workspace.dependencies]
 anyhow                = { version = "1.0.102" }
+ashpd                 = { version = "0.13.11", default-features = false, features = ["async-io", "global_shortcuts"] }
+async-channel         = { version = "2.5.0" }
 error-location        = { version = "0.1.0" }
+futures-util          = { version = "0.3.32" }
+global-hotkey         = { version = "0.8.0" }
 gpui                  = { version = "0.2.2" }
 gpui-component        = { version = "0.5.1" }
 gpui-component-assets = { version = "0.5.1" }
+pollster              = { version = "0.4.0" }
 thiserror             = { version = "2.0.18" }
 
 # Components
