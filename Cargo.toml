@@ -27,6 +27,7 @@ gpui-component        = { path = "submodules/gpui-component/crates/ui" }
 gpui-component-assets = { path = "submodules/gpui-component/crates/assets" }
 gpui-component-macros = { path = "submodules/gpui-component/crates/macros" }
 gpui_platform         = { path = "submodules/zed/crates/gpui_platform", features = ["font-kit", "wayland", "x11"] }
+image                 = { version = "0.25.1" }
 pollster              = { version = "0.4.0" }
 thiserror             = { version = "2.0.18" }
 

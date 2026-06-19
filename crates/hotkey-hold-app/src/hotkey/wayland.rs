@@ -12,6 +12,8 @@ use crate::hotkey::{
     format_error_chain,
 };
 #[cfg(target_os = "linux")]
+use crate::icon::ensure_desktop_entry;
+#[cfg(target_os = "linux")]
 use anyhow::{Context as _, anyhow};
 #[cfg(target_os = "linux")]
 use ashpd::{
@@ -26,8 +28,6 @@ use ashpd::{
 use futures_util::StreamExt;
 #[cfg(target_os = "linux")]
 use std::{
-    env, fs, io,
-    path::PathBuf,
     sync::mpsc::{self, RecvTimeoutError},
     thread,
     time::Duration,
@@ -35,8 +35,6 @@ use std::{
 
 #[cfg(target_os = "linux")]
 const WAYLAND_DESKTOP_FILE_NAME: &str = "dev.gpui.HotkeyHoldApp.desktop";
-#[cfg(target_os = "linux")]
-const WAYLAND_DESKTOP_ENTRY: &str = include_str!("../../data/dev.gpui.HotkeyHoldApp.desktop");
 #[cfg(target_os = "linux")]
 const HOST_APP_REGISTRATION_TIMEOUT: Duration = Duration::from_secs(5);
 
@@ -163,55 +161,6 @@ fn run_portal(sender: Sender<RuntimeEvent>) -> Result<()> {
 
         Ok(())
     })
-}
-
-#[cfg(target_os = "linux")]
-fn ensure_desktop_entry() -> Result<PathBuf> {
-    let applications_dir = user_applications_dir()?;
-    let desktop_entry_path = applications_dir.join(WAYLAND_DESKTOP_FILE_NAME);
-    let desktop_entry = WAYLAND_DESKTOP_ENTRY.replace(
-        "Exec=hotkey-hold-app",
-        &format!("Exec={}", desktop_exec_value()?),
-    );
-
-    match fs::read_to_string(&desktop_entry_path) {
-        Ok(existing_entry) if existing_entry == desktop_entry => return Ok(desktop_entry_path),
-        Ok(_) => {}
-        Err(error) if error.kind() == io::ErrorKind::NotFound => {}
-        Err(error) => {
-            return Err(error)
-                .with_context(|| format!("read desktop entry {}", desktop_entry_path.display()));
-        }
-    }
-
-    fs::create_dir_all(&applications_dir)
-        .with_context(|| format!("create {}", applications_dir.display()))?;
-    fs::write(&desktop_entry_path, desktop_entry)
-        .with_context(|| format!("write {}", desktop_entry_path.display()))?;
-
-    Ok(desktop_entry_path)
-}
-
-#[cfg(target_os = "linux")]
-fn user_applications_dir() -> Result<PathBuf> {
-    if let Some(data_home) = env::var_os("XDG_DATA_HOME")
-        && !data_home.as_os_str().is_empty()
-    {
-        return Ok(PathBuf::from(data_home).join("applications"));
-    }
-
-    let home = env::var_os("HOME").context("resolve HOME for XDG desktop file installation")?;
-    Ok(PathBuf::from(home).join(".local/share/applications"))
-}
-
-#[cfg(target_os = "linux")]
-fn desktop_exec_value() -> Result<String> {
-    let executable =
-        env::current_exe().context("resolve current executable for XDG desktop entry")?;
-    let executable = executable.to_string_lossy();
-    let escaped = executable.replace('\\', "\\\\").replace('"', "\\\"");
-
-    Ok(format!("\"{escaped}\""))
 }
 
 #[cfg(target_os = "linux")]

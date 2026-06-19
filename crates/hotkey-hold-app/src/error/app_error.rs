@@ -6,6 +6,12 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 pub(crate) enum AppError {
     #[error("{message} {location}")]
+    DesktopMetadata {
+        message: String,
+        location: ErrorLocation,
+    },
+
+    #[error("{message} {location}")]
     MainWindow {
         message: String,
         location: ErrorLocation,
@@ -19,6 +25,14 @@ pub(crate) enum AppError {
 }
 
 impl AppError {
+    #[track_caller]
+    pub(crate) fn desktop_metadata(error: AnyhowError) -> Self {
+        Self::DesktopMetadata {
+            message: format!("Failed to install desktop metadata: {error}"),
+            location: ErrorLocation::from(Location::caller()),
+        }
+    }
+
     #[track_caller]
     pub(crate) fn main_window(error: AnyhowError) -> Self {
         Self::MainWindow {
@@ -37,6 +51,7 @@ impl AppError {
 
     pub(crate) fn message(&self) -> &str {
         match self {
+            Self::DesktopMetadata { .. } => "Desktop Metadata Error",
             Self::MainWindow { .. } => "Main Window Error",
             Self::HotkeyRuntime { .. } => "Hotkey Runtime Error",
         }
@@ -44,7 +59,9 @@ impl AppError {
 
     pub(crate) fn location(&self) -> ErrorLocation {
         match self {
-            Self::MainWindow { location, .. } | Self::HotkeyRuntime { location, .. } => *location,
+            Self::DesktopMetadata { location, .. }
+            | Self::MainWindow { location, .. }
+            | Self::HotkeyRuntime { location, .. } => *location,
         }
     }
 }

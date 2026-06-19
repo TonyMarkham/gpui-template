@@ -1,5 +1,6 @@
 mod error;
 mod hotkey;
+mod icon;
 mod windows;
 
 // ---------------------------------------------------------------------------------------------- //
@@ -58,6 +59,8 @@ fn run_app(app: &mut App) {
 }
 
 fn start(app: &mut App) -> AppResult<()> {
+    install_desktop_metadata()?;
+
     let backend_kind = select_backend_kind();
     let (sender, receiver) = new_event_channel();
     let controller = app.new(|cx| Controller::new(backend_kind, cx));
@@ -80,6 +83,18 @@ fn start(app: &mut App) -> AppResult<()> {
         WindowBounds::centered(size(px(DEFAULT_START_WIDTH), px(DEFAULT_START_HEIGHT)), app);
 
     open_main_window(app, controller, window_bounds).map_err(AppError::main_window)
+}
+
+#[cfg(target_os = "linux")]
+fn install_desktop_metadata() -> AppResult<()> {
+    icon::ensure_desktop_entry()
+        .map(|_| ())
+        .map_err(AppError::desktop_metadata)
+}
+
+#[cfg(not(target_os = "linux"))]
+fn install_desktop_metadata() -> AppResult<()> {
+    Ok(())
 }
 
 fn report_error(error: &AppError) {

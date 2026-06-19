@@ -1,5 +1,8 @@
 use crate::{
-    MINIMUM_HEIGHT, MINIMUM_WIDTH, WINDOW_TITLE, hotkey::Controller, windows::window_resize_handles,
+    MINIMUM_HEIGHT, MINIMUM_WIDTH, WINDOW_TITLE,
+    hotkey::Controller,
+    icon::{APP_ID, window_icon},
+    windows::window_resize_handles,
 };
 
 use anyhow::Result;
@@ -91,6 +94,8 @@ pub(crate) fn open_main_window(
         window_bounds: Some(window_bounds),
         window_min_size: Some(size(px(MINIMUM_WIDTH), px(MINIMUM_HEIGHT))),
         titlebar: Some(TitleBar::title_bar_options()),
+        app_id: Some(APP_ID.to_string()),
+        icon: Some(window_icon()),
         #[cfg(target_os = "linux")]
         window_decorations: Some(WindowDecorations::Client),
         ..Default::default()

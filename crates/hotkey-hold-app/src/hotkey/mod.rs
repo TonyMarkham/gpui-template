@@ -28,7 +28,7 @@ pub(crate) use wayland_runtime::WaylandRuntime;
 
 pub(crate) const HOTKEY_ID: &str = "hold-overlay";
 const HOTKEY_LABEL: &str = "Ctrl+Alt+Space";
-const WAYLAND_APP_ID: &str = "dev.gpui.HotkeyHoldApp";
+const WAYLAND_APP_ID: &str = crate::icon::APP_ID;
 const WAYLAND_PREFERRED_TRIGGER: &str = "CTRL+ALT+space";
 
 pub(crate) fn new_event_channel() -> (Sender<RuntimeEvent>, Receiver<RuntimeEvent>) {
