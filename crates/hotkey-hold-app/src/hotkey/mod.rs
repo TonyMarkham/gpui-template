@@ -38,12 +38,23 @@ pub(crate) fn new_event_channel() -> (Sender<RuntimeEvent>, Receiver<RuntimeEven
 pub(crate) fn select_backend_kind() -> BackendKind {
     #[cfg(target_os = "linux")]
     {
-        if std::env::var_os("WAYLAND_DISPLAY").is_some() {
+        if is_wayland_session() {
             return BackendKind::WaylandPortal;
         }
     }
 
     BackendKind::GlobalHotkey
+}
+
+#[cfg(target_os = "linux")]
+fn is_wayland_session() -> bool {
+    let has_wayland_display =
+        std::env::var_os("WAYLAND_DISPLAY").is_some_and(|value| !value.is_empty());
+    let session_type_is_wayland = std::env::var_os("XDG_SESSION_TYPE")
+        .and_then(|value| value.into_string().ok())
+        .is_some_and(|value| value.eq_ignore_ascii_case("wayland"));
+
+    has_wayland_display || session_type_is_wayland
 }
 
 pub(crate) fn start_runtime(

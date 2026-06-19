@@ -5,6 +5,10 @@ members = [
     "crates/hotkey-hold-app",
     "crates/tree-view-app"
 ]
+exclude = [
+    "submodules/zed",
+    "submodules/gpui-component"
+]
 resolver = "3"
 
 [workspace.package]
@@ -18,9 +22,11 @@ async-channel         = { version = "2.5.0" }
 error-location        = { version = "0.1.0" }
 futures-util          = { version = "0.3.32" }
 global-hotkey         = { version = "0.8.0" }
-gpui                  = { version = "0.2.2" }
-gpui-component        = { version = "0.5.1" }
-gpui-component-assets = { version = "0.5.1" }
+gpui                  = { path = "submodules/zed/crates/gpui" }
+gpui-component        = { path = "submodules/gpui-component/crates/ui" }
+gpui-component-assets = { path = "submodules/gpui-component/crates/assets" }
+gpui-component-macros = { path = "submodules/gpui-component/crates/macros" }
+gpui_platform         = { path = "submodules/zed/crates/gpui_platform", features = ["font-kit", "wayland", "x11"] }
 pollster              = { version = "0.4.0" }
 thiserror             = { version = "2.0.18" }
 
@@ -34,3 +40,6 @@ panic                 = "deny"
 
 [workspace.lints.rust]
 unused_must_use       = "deny"
+
+[patch."https://github.com/zed-industries/zed"]
+gpui = { path = "submodules/zed/crates/gpui" }

@@ -223,7 +223,7 @@ impl Render for TreeView {
                 self.rows.len(),
                 cx.processor(Self::render_entries),
             )
-            .track_scroll(self.scroll_handle.clone())
+            .track_scroll(&self.scroll_handle)
             .with_sizing_behavior(ListSizingBehavior::Auto)
             .size_full(),
         )

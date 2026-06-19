@@ -40,7 +40,7 @@ impl Render for TreeViewDemo {
 }
 
 fn main() {
-    let app = gpui::Application::new().with_assets(gpui_component_assets::Assets);
+    let app = gpui_platform::application().with_assets(gpui_component_assets::Assets);
 
     app.run(move |app| {
         gpui_component::init(app);

@@ -8,7 +8,7 @@ use crate::{
     error::AppError, theme::init as AppThemeInit, windows::open_main_window as app_open_main_window,
 };
 
-use gpui::{App, Application as GpuiApplication, Pixels, WindowBounds, px, size};
+use gpui::{App, Pixels, WindowBounds, px, size};
 use gpui_component_assets::Assets as GpuiComponentAssets;
 
 const WINDOW_TITLE: &str = "Template Desktop App";
@@ -22,7 +22,7 @@ const MINIMUM_WIDTH: f32 = 300.0;
 const MINIMUM_HEIGHT: f32 = 200.0;
 
 fn main() {
-    GpuiApplication::new()
+    gpui_platform::application()
         .with_assets(GpuiComponentAssets)
         .run(run_app);
 }

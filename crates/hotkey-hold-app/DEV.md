@@ -81,9 +81,12 @@ Earlier behavior called `window.remove_window()` on release. Under Wayland this 
 - hide: render a hidden root element and resize the overlay to `1x1`
 - show: resize back to `360x136` and render the overlay content
 
-The overlay uses `WindowKind::PopUp`, not `WindowKind::Floating`.
+On Wayland, the overlay uses a `WindowKind::LayerShell` surface on the overlay layer with
+keyboard interactivity disabled. That keeps it above normal windows without accepting keyboard
+focus.
 
-GPUI's Wayland implementation parents `Floating` windows to the focused toplevel. That makes the overlay disappear when the main window is minimized. `PopUp` avoids the parented floating-window path and still works with the hidden-on-release lifecycle.
+The workspace patches `gpui` to the vendored Zed GPUI source because the published `gpui 0.2.2`
+crate does not expose layer-shell APIs.
 
 ## Main Window Close
 

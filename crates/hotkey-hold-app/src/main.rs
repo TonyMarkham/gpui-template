@@ -10,7 +10,7 @@ use crate::{
     windows::open_main_window,
 };
 
-use gpui::{App, AppContext, Application as GpuiApplication, Pixels, WindowBounds, px, size};
+use gpui::{App, AppContext, Pixels, WindowBounds, px, size};
 use gpui_component_assets::Assets as GpuiComponentAssets;
 
 const WINDOW_TITLE: &str = "Hotkey Hold App";
@@ -22,10 +22,32 @@ const MINIMUM_WIDTH: f32 = 360.0;
 const MINIMUM_HEIGHT: f32 = 220.0;
 
 fn main() {
-    GpuiApplication::new()
+    prefer_x11_windowing_for_gnome_wayland();
+
+    gpui_platform::application()
         .with_assets(GpuiComponentAssets)
         .run(run_app);
 }
+
+#[cfg(target_os = "linux")]
+fn prefer_x11_windowing_for_gnome_wayland() {
+    let has_wayland = std::env::var_os("WAYLAND_DISPLAY").is_some_and(|value| !value.is_empty());
+    let has_x11 = std::env::var_os("DISPLAY").is_some_and(|value| !value.is_empty());
+    let is_gnome = std::env::var_os("XDG_CURRENT_DESKTOP")
+        .and_then(|value| value.into_string().ok())
+        .is_some_and(|value| value.to_ascii_lowercase().contains("gnome"));
+
+    if has_wayland && has_x11 && is_gnome {
+        // GPUI's Wayland always-on-top path requires wlr-layer-shell, which GNOME does not expose.
+        // This runs before GPUI starts or any app threads are spawned, so changing process env is safe.
+        unsafe {
+            std::env::remove_var("WAYLAND_DISPLAY");
+        }
+    }
+}
+
+#[cfg(not(target_os = "linux"))]
+fn prefer_x11_windowing_for_gnome_wayland() {}
 
 fn run_app(app: &mut App) {
     gpui_component::init(app);
@@ -43,7 +65,7 @@ fn start(app: &mut App) -> AppResult<()> {
     let event_task = start_event_task(controller.clone(), receiver, app);
     let window_closed_subscription = app.on_window_closed({
         let controller = controller.clone();
-        move |app| {
+        move |app, _| {
             controller.update(app, |controller, cx| {
                 controller.window_closed(cx);
             });
